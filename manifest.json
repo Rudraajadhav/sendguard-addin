@@ -1,0 +1,89 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "d73a3e08-cbb8-4c88-9777-51c13e7c1d04",
+  "localizationInfo": { "defaultLanguageTag": "en-us", "additionalLanguages": [] },
+  "developer": {
+    "name": "SendGuard",
+    "websiteUrl": "https://rudraajadhav.github.io/sendguard-addin/taskpane.html",
+    "privacyUrl": "https://rudraajadhav.github.io/sendguard-addin/taskpane.html",
+    "termsOfUseUrl": "https://rudraajadhav.github.io/sendguard-addin/taskpane.html"
+  },
+  "name": { "short": "SendGuard", "full": "SendGuard data loss prevention" },
+  "description": {
+    "short": "Blocks emails containing Indian personal or financial data.",
+    "full": "SendGuard checks the subject, body and attachments when you click Send and blocks emails that contain card, bank account, IFSC, PAN, Aadhaar or driving licence numbers."
+  },
+  "icons": { "outline": "assets/outline.png", "color": "assets/color.png" },
+  "accentColor": "#0F6CBD",
+  "validDomains": ["https://rudraajadhav.github.io"],
+  "showLoadingIndicator": false,
+  "isFullScreen": false,
+  "defaultBlockUntilAdminAction": false,
+  "authorization": {
+    "permissions": { "resourceSpecific": [{ "name": "MailboxItem.ReadWrite.User", "type": "Delegated" }] }
+  },
+  "extensions": [
+    {
+      "requirements": { "scopes": ["mail"], "capabilities": [{ "name": "Mailbox", "minVersion": "1.12" }] },
+      "runtimes": [
+        {
+          "id": "EventRuntime",
+          "type": "general",
+          "code": { "page": "https://rudraajadhav.github.io/sendguard-addin/commands.html", "script": "https://rudraajadhav.github.io/sendguard-addin/launchevent.js" },
+          "lifetime": "short",
+          "actions": [{ "id": "onMessageSendHandler", "type": "executeFunction", "displayName": "onMessageSendHandler" }]
+        },
+        {
+          "id": "TaskPaneRuntime",
+          "type": "general",
+          "code": { "page": "https://rudraajadhav.github.io/sendguard-addin/taskpane.html" },
+          "lifetime": "short",
+          "actions": [{ "id": "OpenSendGuardPane", "type": "openPage", "pinnable": false, "view": "dashboard" }]
+        }
+      ],
+      "ribbons": [
+        {
+          "contexts": ["mailCompose"],
+          "tabs": [
+            {
+              "builtInTabId": "TabDefault",
+              "groups": [
+                {
+                  "id": "sendGuardComposeGroup",
+                  "label": "SendGuard",
+                  "icons": [
+                    { "size": 16, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-16.png" },
+                    { "size": 32, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-32.png" },
+                    { "size": 80, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-80.png" }
+                  ],
+                  "controls": [
+                    {
+                      "id": "sendGuardComposeButton",
+                      "type": "button",
+                      "label": "SendGuard",
+                      "icons": [
+                        { "size": 16, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-16.png" },
+                        { "size": 32, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-32.png" },
+                        { "size": 80, "url": "https://rudraajadhav.github.io/sendguard-addin/assets/icon-80.png" }
+                      ],
+                      "supertip": { "title": "SendGuard", "description": "Check this draft for sensitive data before sending." },
+                      "actionId": "OpenSendGuardPane"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "autoRunEvents": [
+        {
+          "requirements": { "capabilities": [{ "name": "Mailbox", "minVersion": "1.12" }] },
+          "events": [{ "type": "messageSending", "actionId": "onMessageSendHandler", "options": { "sendMode": "block" } }]
+        }
+      ]
+    }
+  ]
+}

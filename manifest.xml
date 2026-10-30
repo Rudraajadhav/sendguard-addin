@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SendGuard add-in only (XML) manifest. Use this one for sideloading (Outlook.com / Outlook on
+  the web "Add from File") and for classic Outlook on Windows.
+  https://rudraajadhav.github.io/sendguard-addin/ is replaced by the production URL at build time (see webpack.config.js).
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
+           xsi:type="MailApp">
+  <Id>d73a3e08-cbb8-4c88-9777-51c13e7c1d04</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>SendGuard</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="SendGuard"/>
+  <Description DefaultValue="Blocks emails that contain Indian card, bank account, IFSC, PAN, Aadhaar or driving licence numbers."/>
+  <IconUrl DefaultValue="https://rudraajadhav.github.io/sendguard-addin/assets/icon-64.png"/>
+  <HighResolutionIconUrl DefaultValue="https://rudraajadhav.github.io/sendguard-addin/assets/icon-128.png"/>
+  <SupportUrl DefaultValue="https://rudraajadhav.github.io/sendguard-addin/taskpane.html"/>
+  <AppDomains>
+    <AppDomain>https://rudraajadhav.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Mailbox"/>
+  </Hosts>
+  <Requirements>
+    <Sets>
+      <Set Name="Mailbox" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://rudraajadhav.github.io/sendguard-addin/taskpane.html"/>
+        <RequestedHeight>250</RequestedHeight>
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+  <Permissions>ReadWriteItem</Permissions>
+  <Rule xsi:type="RuleCollection" Mode="Or">
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Edit"/>
+  </Rule>
+  <DisableEntityHighlighting>false</DisableEntityHighlighting>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
+      <Requirements>
+        <bt:Sets DefaultMinVersion="1.12">
+          <bt:Set Name="Mailbox"/>
+        </bt:Sets>
+      </Requirements>
+      <Hosts>
+        <Host xsi:type="MailHost">
+          <Runtimes>
+            <!-- HTML page for web / new Outlook; the JavaScript file for classic Outlook on Windows. -->
+            <Runtime resid="WebViewRuntime.Url">
+              <Override type="javascript" resid="JSRuntime.Url"/>
+            </Runtime>
+          </Runtimes>
+          <DesktopFormFactor>
+            <FunctionFile resid="Commands.Url"/>
+            <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+              <OfficeTab id="TabDefault">
+                <Group id="sendGuardComposeGroup">
+                  <Label resid="GroupLabel"/>
+                  <Control xsi:type="Button" id="sendGuardComposeButton">
+                    <Label resid="TaskpaneButton.Label"/>
+                    <Supertip>
+                      <Title resid="TaskpaneButton.Label"/>
+                      <Description resid="TaskpaneButton.Tooltip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.16x16"/>
+                      <bt:Image size="32" resid="Icon.32x32"/>
+                      <bt:Image size="80" resid="Icon.80x80"/>
+                    </Icon>
+                    <Action xsi:type="ShowTaskpane">
+                      <SourceLocation resid="Taskpane.Url"/>
+                    </Action>
+                  </Control>
+                </Group>
+              </OfficeTab>
+            </ExtensionPoint>
+            <ExtensionPoint xsi:type="LaunchEvent">
+              <LaunchEvents>
+                <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSendHandler" SendMode="Block"/>
+              </LaunchEvents>
+              <SourceLocation resid="WebViewRuntime.Url"/>
+            </ExtensionPoint>
+          </DesktopFormFactor>
+        </Host>
+      </Hosts>
+      <Resources>
+        <bt:Images>
+          <bt:Image id="Icon.16x16" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/assets/icon-16.png"/>
+          <bt:Image id="Icon.32x32" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/assets/icon-32.png"/>
+          <bt:Image id="Icon.80x80" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/assets/icon-80.png"/>
+        </bt:Images>
+        <bt:Urls>
+          <bt:Url id="Commands.Url" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/commands.html"/>
+          <bt:Url id="Taskpane.Url" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/taskpane.html"/>
+          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/commands.html"/>
+          <bt:Url id="JSRuntime.Url" DefaultValue="https://rudraajadhav.github.io/sendguard-addin/launchevent.js"/>
+        </bt:Urls>
+        <bt:ShortStrings>
+          <bt:String id="GroupLabel" DefaultValue="SendGuard"/>
+          <bt:String id="TaskpaneButton.Label" DefaultValue="SendGuard"/>
+        </bt:ShortStrings>
+        <bt:LongStrings>
+          <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Check this draft for sensitive data before sending."/>
+        </bt:LongStrings>
+      </Resources>
+    </VersionOverrides>
+  </VersionOverrides>
+</OfficeApp>
